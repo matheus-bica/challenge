@@ -2,6 +2,7 @@ package com.axur.challenge.DAO;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -18,25 +19,38 @@ import org.springframework.transaction.annotation.Transactional;
 import com.axur.challenge.model.Whitelist;
 
 @Repository
-public class WhitelistDAO {
+public class WhitelistDAO implements DAO<Whitelist> {
 	
 	@PersistenceContext
 	private EntityManager em;
-	
-	public Collection<Whitelist> getAllWhitelist() {
-		CriteriaBuilder cb = this.em.getCriteriaBuilder();
+
+	@Override
+	public Collection<Whitelist> getAll() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Whitelist> criteria = cb.createQuery(Whitelist.class);
 		Collection<Whitelist> resultList = em.createQuery(criteria).getResultList();
 		return resultList;
 	}
+		
+	@Override
+	public List<Whitelist> getList(String[] params) {
+		TypedQuery<Whitelist> query = em.createQuery("SELECT c FROM Whitelist c WHERE (c.client = ?1 OR c.client = 'global')", Whitelist.class);
+		query.setParameter(1, params[0]);
+
+		try {
+			return query.getResultList();
+		} catch (IllegalStateException | PersistenceException e) {
+			return null;
+		}
+	}
 	
-	public Whitelist getSpecificWhitelist(String client, String regex) {
-		TypedQuery<Whitelist> query = this.em.createQuery("SELECT c FROM Whitelist c WHERE (c.client = ?1 OR c.client = 'global') and regex = ?2", Whitelist.class);
-		query.setParameter(1, client);
-		query.setParameter(2, regex);
+	@Override
+	public Whitelist getSpecific(Whitelist t) {
+		TypedQuery<Whitelist> query = em.createQuery("SELECT c FROM Whitelist c WHERE (c.client = ?1 OR c.client = 'global') and regex = ?2", Whitelist.class);
+		query.setParameter(1, t.getClient());
+		query.setParameter(2, t.getRegex());
 		query.setMaxResults(1);
 		
-		System.out.println("Trying get");
 		try {
 			return query.getSingleResult();
 		} catch (NoResultException e) {
@@ -49,25 +63,37 @@ public class WhitelistDAO {
 		System.out.println("Null2");
 		return null;
 	}
+
 	
-	public List<Whitelist> getWhitelist(String client) {
-		TypedQuery<Whitelist> query = this.em.createQuery("SELECT c FROM Whitelist c WHERE (c.client = ?1 OR c.client = 'global')", Whitelist.class);
-		query.setParameter(1, client);
-
-		try {
-			return query.getResultList();
-		} catch (IllegalStateException | PersistenceException e) {
-			return null;
-		}		
-	}
-
+	@Override
 	@Transactional
-	public boolean insertWhitelist(Whitelist whitelist) {
+	public boolean save(Whitelist t) {
 		try {
-			this.em.persist(whitelist);
+			this.em.persist(t);
 			return true;
 		} catch (Exception e) {
 			return false;
-		}
+		}		
+	}
+	
+	@Override
+	public Optional<Whitelist> get(long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@Transactional
+	public void update(Whitelist t, String[] params) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	@Transactional
+	public boolean delete(Whitelist t) {
+		return false;
+		
 	}
 }
+

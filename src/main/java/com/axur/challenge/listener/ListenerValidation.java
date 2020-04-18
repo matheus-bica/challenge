@@ -18,15 +18,15 @@ import com.google.gson.JsonParseException;
 @Component
 public class ListenerValidation implements MessageListener {
 
-	@Autowired
-	private WhitelistDAO whitelistDAO;
-
-	private CountDownLatch latch = new CountDownLatch(1);
-
-	public void receiveMessage(String message) {
-		System.out.println("Received message: " + message);
-		latch.countDown();
-	}
+//	@Autowired
+//	private WhitelistDAO whitelistDAO;
+//
+//	private CountDownLatch latch = new CountDownLatch(1);
+//
+//	public void receiveMessage(String message) {
+//		System.out.println("Received message: " + message);
+//		latch.countDown();
+//	}
 
 	@Override
 	public void onMessage(Message message) {
@@ -34,31 +34,31 @@ public class ListenerValidation implements MessageListener {
 				+ message.getMessageProperties().getReceivedRoutingKey());
 		try {
 			InputData inputData = new Gson().fromJson(new String(message.getBody()), InputData.class);
-			receivedValidation(inputData);
+//			receivedValidation(inputData);
 		} catch (JsonParseException e) {
 			System.out.println("It was not possible to read the input");
 		}
 	}
 
-	public void receivedValidation(InputData inputData) {
-		// getting all regex from this client
-		List<Whitelist> listWhitelist = whitelistDAO.getWhitelist(inputData.getClient());
-		boolean match = false;
+//	public void receivedValidation(InputData inputData) {
+//		// getting all regex from this client
+//		//List<Whitelist> listWhitelist = whitelistDAO.getWhitelist(inputData.getClient());
+//		boolean match = false;
 		// verify if the regex works for the url provided
-		if (listWhitelist != null) {
-			int index = 0;
-			while (match == false && index < listWhitelist.size()) {
-				match = checkRegex(listWhitelist.get(index).getRegex(), inputData.getUrl());
-				index++;
-			}
-		}
+//		if (listWhitelist != null) {
+//			int index = 0;
+//			while (match == false && index < listWhitelist.size()) {
+//				match = checkRegex(listWhitelist.get(index).getRegex(), inputData.getUrl());
+//				index++;
+//			}
+//		}
 
-		if (match == true) {
-
-		} else {
-
-		}
-	}
+//		if (match == true) {
+//
+//		} else {
+//
+//		}
+//	}
 
 	public boolean checkRegex(String regex, String url) {
 		return Pattern.compile(regex).matcher(url).find();

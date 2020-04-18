@@ -45,7 +45,7 @@ public class Whitelist {
 	public String toString() {
 		return String.format("client:%s, regex:%s", client, regex);
 	}
-
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {

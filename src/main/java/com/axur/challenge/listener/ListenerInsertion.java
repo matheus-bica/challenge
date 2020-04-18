@@ -5,7 +5,9 @@ import org.springframework.amqp.core.MessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.axur.challenge.DAO.DAO;
 import com.axur.challenge.DAO.WhitelistDAO;
 import com.axur.challenge.formatters.InputData;
 import com.axur.challenge.model.Whitelist;
@@ -17,7 +19,7 @@ import com.google.gson.JsonParseException;
 public class ListenerInsertion implements MessageListener {
 	
 	@Autowired
-	WhitelistDAO whitelistDAO = new WhitelistDAO();
+	private static DAO<Whitelist> whitelistDAO = new WhitelistDAO();
 			
 	@Override
 	public void onMessage(Message message) {
@@ -32,6 +34,7 @@ public class ListenerInsertion implements MessageListener {
 		}
 	}
 	
+	@TransactionalEventListener
 	public void receivedInsertion(InputData inputData) {
 		Whitelist whitelist = new Whitelist();
 		String client = inputData.getClient();
@@ -59,7 +62,7 @@ public class ListenerInsertion implements MessageListener {
 //			System.out.println("Result: " + result);
 			// --------------------------------------------------------
 			//System.out.println("ENTITY MANAGER----> " + em);
-			Whitelist selectedWhitelist = whitelistDAO.getSpecificWhitelist(inputData.getClient(), inputData.getRegex());
+			Whitelist selectedWhitelist = whitelistDAO.getSpecific(whitelist);
 			System.out.println("selectedWhitelist: " + selectedWhitelist);
 //			if (selectedWhitelist == null || !selectedWhitelist.equals(whitelist)) {
 //				whitelistDAO.insertWhitelist(whitelist);
