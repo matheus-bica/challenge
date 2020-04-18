@@ -3,23 +3,22 @@ package com.axur.challenge.listener;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.axur.challenge.DAO.DAO;
-import com.axur.challenge.DAO.WhitelistDAO;
 import com.axur.challenge.formatters.InputData;
 import com.axur.challenge.model.Whitelist;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
-@EnableAutoConfiguration
 @Component
 public class ListenerInsertion implements MessageListener {
 	
 	@Autowired
-	private static DAO<Whitelist> whitelistDAO = new WhitelistDAO();
+	private DAO<Whitelist> whitelistDAO;
 			
 	@Override
 	public void onMessage(Message message) {
