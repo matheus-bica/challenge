@@ -13,8 +13,9 @@ import org.springframework.context.annotation.Configuration;
 import com.axur.challenge.listener.ListenerInsertion;
 import com.axur.challenge.listener.ListenerValidation;
 
+import javax.annotation.Resource;
+
 @SpringBootApplication
-@Configuration
 public class ChallengeApplication {
 
 	public static void main(String[] args) {
@@ -25,6 +26,11 @@ public class ChallengeApplication {
 	static final String routingKey = "response.routing.key";
 	static final String insertionQueue = "insertion.queue";
 	static final String validationQueue = "validation.queue";
+
+	@Resource
+	ListenerInsertion listenerInsertion;
+	@Resource
+	ListenerValidation listenerValidation;
 	
 	@Bean
 	public ConnectionFactory connectionFactory() {
@@ -51,23 +57,13 @@ public class ChallengeApplication {
 		return new DirectExchange(responseExchange);
 	}
 
-//	@Bean
-//	DirectExchangeRoutingKeyConfigurer bindingInsertion(@Qualifier("queueInsertion") Queue queueInsertion, DirectExchange exchange) {
-//		return BindingBuilder.bind(queueInsertion).to(exchange);
-//	}
-//	
-//	@Bean
-//	DirectExchangeRoutingKeyConfigurer queueValidation(@Qualifier("queueValidation") Queue queueValidation, DirectExchange exchange) {
-//		return BindingBuilder.bind(queueValidation).to(exchange);
-//	}
-	
 	@Bean
 	SimpleMessageListenerContainer messageListenerContainerInsertion() {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory());
 		container.setConcurrentConsumers(3);
 		container.setQueueNames(insertionQueue);
-		container.setMessageListener(new ListenerInsertion());
+		container.setMessageListener(listenerInsertion);
 		return container;
 	}
 	
@@ -77,20 +73,8 @@ public class ChallengeApplication {
 		container.setConnectionFactory(connectionFactory());
 		container.setConcurrentConsumers(3);
 		container.setQueueNames(validationQueue);
-		container.setMessageListener(new ListenerValidation());
+		container.setMessageListener(listenerValidation);
 		return container;
 	}
-//	
-//	@Bean
-//    public RabbitTemplate rabbitTemplate(final ConnectionFactory connectionFactory){
-//        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-//        rabbitTemplate.setMessageConverter(null);
-//        return rabbitTemplate;
-//    }
-
-//	@Bean
-//	MessageListenerAdapter listenerAdapter(Receiver receiver) {
-//		return new MessageListenerAdapter(receiver, "receiveMessage");
-//	}
 
 }

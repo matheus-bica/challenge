@@ -1,6 +1,6 @@
 package com.axur.challenge.formatters;
 
-public class OutputData {
+public class JsonFormatter {
 	private String client;
 	private String regex;
 	private String url;
