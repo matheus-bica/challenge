@@ -23,7 +23,9 @@ public class WhitelistDAO implements DAO<Whitelist> {
 	
 	@PersistenceContext
 	private EntityManager em;
-
+	//EntityManagerFactory emf;
+	//EntityManager em = emf.createEntityManager();
+	
 	@Override
 	public Collection<Whitelist> getAll() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
