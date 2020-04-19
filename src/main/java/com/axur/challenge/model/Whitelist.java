@@ -43,7 +43,7 @@ public class Whitelist {
 	}
 
 	public String toString() {
-		return String.format("client:%s, regex:%s", client, regex);
+		return String.format("{'client':'%s', 'regex':'%s'}", client, regex);
 	}
 	
 	@Override

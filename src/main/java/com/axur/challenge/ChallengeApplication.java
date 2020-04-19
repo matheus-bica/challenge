@@ -1,5 +1,6 @@
 package com.axur.challenge;
 
+import com.axur.challenge.sender.SendResponse;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -8,7 +9,6 @@ import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import com.axur.challenge.listener.ListenerInsertion;
 import com.axur.challenge.listener.ListenerValidation;
@@ -22,20 +22,23 @@ public class ChallengeApplication {
 		SpringApplication.run(ChallengeApplication.class, args);
 	}
 	
-	static final String responseExchange = "response.exchange";
-	static final String routingKey = "response.routing.key";
-	static final String insertionQueue = "insertion.queue";
-	static final String validationQueue = "validation.queue";
+	public static final String responseExchange = "response.exchange";
+	public static final String routingKey = "response.routing.key";
+	public static final String insertionQueue = "insertion.queue";
+	public static final String validationQueue = "validation.queue";
+
 
 	@Resource
 	ListenerInsertion listenerInsertion;
 	@Resource
 	ListenerValidation listenerValidation;
-	
+	@Resource
+	SendResponse sendResponse;
+
 	@Bean
-	public ConnectionFactory connectionFactory() {
+	ConnectionFactory connectionFactory() {
 	    CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-	    connectionFactory.setHost("127.0.0.1");
+	    connectionFactory.setHost("localhost");
 	    connectionFactory.setVirtualHost("/");
 	    connectionFactory.setUsername("guest");
 	    connectionFactory.setPassword("guest");

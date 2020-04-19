@@ -23,25 +23,18 @@ public class ListenerInsertion implements MessageListener {
 		System.out.println("Received Insertion: " + new String(message.getBody()) + " From: "
 				+ message.getMessageProperties().getReceivedRoutingKey());
 		try {
-			JsonFormatter jsonFormatter = new Gson().fromJson(new String(message.getBody()), JsonFormatter.class);
-			receivedInsertion (jsonFormatter);
+			JsonFormatter inputData = new Gson().fromJson(new String(message.getBody()), JsonFormatter.class);
+			receivedInsertion (inputData);
 		} catch (JsonParseException e) {
 			System.out.println("It was not possible to read the input message");
 		}
 	}
 
-	public void receivedInsertion(JsonFormatter jsonFormatter) {
+	public void receivedInsertion(JsonFormatter inputData) {
 		Whitelist whitelist = new Whitelist();
-		String client = jsonFormatter.getClient();
+		whitelist.setClient(inputData.getClient());
+		whitelist.setRegex(inputData.getRegex());
 
-		if (client == null) {
-			whitelist.setClient("global");
-		} else {
-			whitelist.setClient(jsonFormatter.getClient());
-		}
-		whitelist.setRegex(jsonFormatter.getRegex());
-
-		System.out.println("Received Insertion Whitelist: " + whitelist);
 		try {
 			Whitelist selectWhitelist = whitelistDAO.findByClientAndRegex(whitelist.getClient(), whitelist.getRegex());
 			if (selectWhitelist == null) {

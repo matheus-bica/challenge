@@ -33,6 +33,6 @@ public class JsonFormatter {
 	}
 	
 	public String toString() {
-        return String.format("client:%s, regex:%s, url:%s, correlationId:%s", client, regex, url, correlationId);
+        return String.format("{'client':'%s', 'regex':'%s', 'url':'%s', 'correlationId':'%s'}", client, regex, url, correlationId);
     }
 }
