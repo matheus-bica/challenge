@@ -31,12 +31,14 @@ public class ListenerInsertion implements MessageListener {
 	}
 
 	public void receivedInsertion(JsonFormatter inputData) {
-		Whitelist whitelist = new Whitelist();
-		whitelist.setClient(inputData.getClient());
-		whitelist.setRegex(inputData.getRegex());
-
+		Whitelist whitelist = new Whitelist(inputData.getClient(), inputData.getRegex());
 		try {
-			Whitelist selectWhitelist = whitelistDAO.findByClientAndRegex(whitelist.getClient(), whitelist.getRegex());
+			Whitelist selectWhitelist;
+			if (inputData.getClient() == null){
+				selectWhitelist = whitelistDAO.findByClientNullAndRegex(whitelist.getRegex());
+			} else {
+				selectWhitelist = whitelistDAO.findByClientAndRegex(whitelist.getClient(), whitelist.getRegex());
+			}
 			if (selectWhitelist == null) {
 				whitelistDAO.save(whitelist);
 				System.out.println("Whitelist client: " + whitelist.getClient() + " and regex: " + whitelist.getRegex() + " was inserted successfully!");
@@ -44,7 +46,7 @@ public class ListenerInsertion implements MessageListener {
 				System.out.println("The pair client and regex already exist");
 			}
 		} catch (Exception dae) {
-			System.err.println(dae);
+			System.out.println(dae);
 		}
 	}
 

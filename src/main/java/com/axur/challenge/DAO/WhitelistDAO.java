@@ -10,11 +10,13 @@ import java.util.List;
 
 @Repository
 public interface WhitelistDAO extends JpaRepository<Whitelist, Long> {
-    Whitelist findByClient(String client);
 
     @Query("SELECT w FROM Whitelist w WHERE w.client = :client AND w.regex = :regex")
     Whitelist findByClientAndRegex(@Param("client") String client,@Param("regex") String regex);
 
-    @Query("SELECT w FROM Whitelist w WHERE w.client = :client OR w.client = null")
+    @Query("SELECT w FROM Whitelist w WHERE w.client IS NULL AND w.regex = :regex")
+    Whitelist findByClientNullAndRegex(@Param("regex") String regex);
+
+    @Query("SELECT w FROM Whitelist w WHERE w.client = :client OR w.client IS NULL")
     List<Whitelist> findByClientAndGlobal(@Param("client") String client);
 }

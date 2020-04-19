@@ -45,6 +45,13 @@ public class Whitelist {
 	public String toString() {
 		return String.format("{'client':'%s', 'regex':'%s'}", client, regex);
 	}
+
+	public Whitelist(){}
+
+	public Whitelist(String client, String regex){
+		setClient(client);
+		setRegex(regex);
+	}
 	
 	@Override
 	public boolean equals(Object o) {

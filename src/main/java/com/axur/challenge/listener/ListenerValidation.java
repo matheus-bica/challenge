@@ -28,7 +28,7 @@ public class ListenerValidation implements MessageListener {
 	@Override
 	public void onMessage(Message message) {
 		System.out.println("Received Validation: " + new String(message.getBody()) + " From: "
-				+ message.getMessageProperties().getReceivedRoutingKey() + " ReplyToAddress: " + message.getMessageProperties().getReplyToAddress());
+				+ message.getMessageProperties().getReceivedRoutingKey());
 		try {
 			JsonFormatter jsonFormatter = new Gson().fromJson(new String(message.getBody()), JsonFormatter.class);
 			receivedValidation(jsonFormatter);
@@ -45,18 +45,18 @@ public class ListenerValidation implements MessageListener {
 //		Verify if the regex works for the url provided
 		if (listWhitelist.size() != 0) {
 			int index = 0;
-			while (match == false && index < listWhitelist.size()) {
+			while (!match && index < listWhitelist.size()) {
 				match = checkRegex(listWhitelist.get(index).getRegex(), inputData.getUrl());
-				regexMatched = listWhitelist.get(index).getRegex();
+				if (match) {
+					regexMatched = listWhitelist.get(index).getRegex();
+				}
 				index++;
 			}
 		}
-		if (match == true) {
-			sendResponse.sendMessage(regexMatched, inputData.getCorrelationId());
-			System.out.println("Found a Match " + regexMatched);
-		} else {
-			System.out.println("Match not found");
-		}
+		inputData.setRegex(regexMatched);
+		inputData.setMatch(match);
+
+		sendResponse.sendMessage(inputData);
 	}
 
 	public boolean checkRegex(String regex, String url) {
