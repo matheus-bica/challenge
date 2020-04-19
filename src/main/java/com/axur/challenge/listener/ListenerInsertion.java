@@ -45,7 +45,7 @@ public class ListenerInsertion implements MessageListener {
             } else {
                 System.out.println("The pair client and regex already exist");
             }
-        } catch (Exception dae) {
+        } catch (NullPointerException dae) {
             System.out.println(dae);
             dae.printStackTrace();
         }

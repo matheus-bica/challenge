@@ -27,7 +27,6 @@ public class ChallengeApplication {
 	public static final String insertionQueue = "insertion.queue";
 	public static final String validationQueue = "validation.queue";
 
-
 	@Resource
 	ListenerInsertion listenerInsertion;
 	@Resource
