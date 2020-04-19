@@ -14,7 +14,7 @@ public class JsonFormatter {
 		this.client = client;
 	}
 	public String getRegex() {
-		if (regex == "") {
+		if (regex.equals("")) {
 			return null;
 		}
 		return regex;
@@ -36,13 +36,23 @@ public class JsonFormatter {
 	}
 	public boolean getMatch() { return match; }
 	public void setMatch(boolean match) { this.match = match; }
+
+	public JsonFormatter(){}
+
+	public JsonFormatter(String client, String regex, String url, String correlationId, boolean match){
+		this.client = client;
+		this.regex = regex;
+		this.url = url;
+		this.correlationId = correlationId;
+		this.match = match;
+	}
 	
 	public String toString() {
         return String.format("{'client':'%s', 'regex':'%s', 'url':'%s', 'correlationId':'%s', 'match':%s}", client, regex, url, correlationId, match);
     }
 
     public String getOutputMessage() {
-		if (regex == "") {
+		if (regex.equals("")) {
 			return String.format("{'match':%s , 'regex':%s, 'correlationId':%s}", match, getRegex(), correlationId);
 		}
 		else {

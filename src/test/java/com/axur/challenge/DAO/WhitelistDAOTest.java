@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 //With this property we load every test to the second database in order to not create or use the main database
-@TestPropertySource(properties = { "spring.datasource.url = jdbc:mysql://${MYSQL_HOST:localhost}:3306/axr_challenge_test?user=root&password=secret" })
+@TestPropertySource(properties = {"spring.datasource.url = jdbc:mysql://${MYSQL_HOST:localhost}:3306/axr_challenge_test?user=root&password=secret"})
 class WhitelistDAOTest {
 
     @Resource
@@ -48,7 +48,7 @@ class WhitelistDAOTest {
 
     @Test
     void findByClientAndRegexNotNullValues() {
-        Whitelist whitelistActual = repository.findByClientAndRegex(whitelist.getClient(), whitelist.getRegex());
+        Whitelist whitelistActual = this.repository.findByClientAndRegex(whitelist.getClient(), whitelist.getRegex());
         assertEquals(whitelistActual.getClient(), whitelist.getClient());
         assertEquals(whitelistActual.getRegex(), whitelist.getRegex());
 
@@ -58,7 +58,7 @@ class WhitelistDAOTest {
     }
 
     @Test
-    void findByClientNullAndRegex(){
+    void findByClientNullAndRegex() {
         Whitelist whitelistActual = repository.findByClientNullAndRegex(whitelist1.getRegex());
         assertEquals(whitelist1.getClient(), whitelistActual.getClient());
         assertEquals(whitelist1.getRegex(), whitelistActual.getRegex());

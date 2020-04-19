@@ -19,47 +19,47 @@ import javax.annotation.Resource;
 @Service
 public class ListenerValidation implements MessageListener {
 
-	@Resource
-	private WhitelistDAO whitelistDAO;
+    @Resource
+    private WhitelistDAO whitelistDAO;
 
-	@Resource
-	SendResponse sendResponse;
+    @Resource
+    SendResponse sendResponse;
 
-	@Override
-	public void onMessage(Message message) {
-		System.out.println("Received Validation: " + new String(message.getBody()) + " From: "
-				+ message.getMessageProperties().getReceivedRoutingKey());
-		try {
-			JsonFormatter jsonFormatter = new Gson().fromJson(new String(message.getBody()), JsonFormatter.class);
-			receivedValidation(jsonFormatter);
-		} catch (JsonParseException e) {
-			System.out.println("It was not possible to read the input");
-		}
-	}
+    @Override
+    public void onMessage(Message message) {
+        System.out.println("Received Validation: " + new String(message.getBody()) + " From: "
+                + message.getMessageProperties().getReceivedRoutingKey());
+        try {
+            JsonFormatter jsonFormatter = new Gson().fromJson(new String(message.getBody()), JsonFormatter.class);
+            receivedValidation(jsonFormatter);
+        } catch (JsonParseException e) {
+            System.out.println("It was not possible to read the input");
+        }
+    }
 
-	public void receivedValidation(JsonFormatter inputData) {
+    public void receivedValidation(JsonFormatter inputData) {
 //		Getting all regex from this client
-		List<Whitelist> listWhitelist = whitelistDAO.findByClientAndGlobal(inputData.getClient());
-		boolean match = false;
-		String regexMatched = "";
+        List<Whitelist> listWhitelist = whitelistDAO.findByClientAndGlobal(inputData.getClient());
+        boolean match = false;
+        String regexMatched = "";
 //		Verify if the regex works for the url provided
-		if (listWhitelist.size() != 0) {
-			int index = 0;
-			while (!match && index < listWhitelist.size()) {
-				match = checkRegex(listWhitelist.get(index).getRegex(), inputData.getUrl());
-				if (match) {
-					regexMatched = listWhitelist.get(index).getRegex();
-				}
-				index++;
-			}
-		}
-		inputData.setRegex(regexMatched);
-		inputData.setMatch(match);
+        if (listWhitelist.size() != 0) {
+            int index = 0;
+            while (!match && index < listWhitelist.size()) {
+                match = checkRegex(listWhitelist.get(index).getRegex(), inputData.getUrl());
+                if (match) {
+                    regexMatched = listWhitelist.get(index).getRegex();
+                }
+                index++;
+            }
+        }
+        inputData.setRegex(regexMatched);
+        inputData.setMatch(match);
 
-		sendResponse.sendMessage(inputData);
-	}
+        sendResponse.sendMessage(inputData);
+    }
 
-	public boolean checkRegex(String regex, String url) {
-		return Pattern.compile(regex).matcher(url).find();
-	}
+    public boolean checkRegex(String regex, String url) {
+        return Pattern.compile(regex).matcher(url).find();
+    }
 }

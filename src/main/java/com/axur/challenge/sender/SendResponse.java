@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Component
 public class SendResponse implements Serializable {
 
-	private final RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
     public SendResponse(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
