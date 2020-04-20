@@ -16,3 +16,7 @@ I could not import from docker-compose.yml the variable NUMBER_OF_VALIDATION_CON
 - The queues validation.queue and insertion.queue have no bindings with the response.exchange since the response.exchange is only for the response for validation requests.
 
 All parameters from RabbitMQ configuration were set by SpringAMPQ or in the ConnectionFactory bean at ChallengeApplication.java.
+
+#### Testing Environment:
+- The database used for the test environment is the H2 in the classes or interfaces that have database interation.
+- It's configuration is in the application.properties at challenge/src/test/resources folder.
