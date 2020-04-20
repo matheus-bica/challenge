@@ -2,6 +2,8 @@ package com.axur.challenge.listener;
 
 import com.axur.challenge.DAO.WhitelistDAO;
 import com.axur.challenge.formatters.JsonFormatter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.stereotype.Service;
@@ -15,18 +17,20 @@ import javax.annotation.Resource;
 @Service
 public class ListenerInsertion implements MessageListener {
 
+    private static final Logger logger = LogManager.getLogger(ListenerInsertion.class);
+
     @Resource
     private WhitelistDAO whitelistDAO;
 
     @Override
     public void onMessage(Message message) {
-        System.out.println("Received Insertion: " + new String(message.getBody()) + " From: "
+        logger.info("Received Insertion" +  new String(message.getBody()) + " From: "
                 + message.getMessageProperties().getReceivedRoutingKey());
         try {
             JsonFormatter inputData = new Gson().fromJson(new String(message.getBody()), JsonFormatter.class);
             receivedInsertion(inputData);
         } catch (JsonParseException e) {
-            System.out.println("It was not possible to read the input message");
+            logger.info("It was not possible to read the input message");
         }
     }
 
@@ -35,19 +39,21 @@ public class ListenerInsertion implements MessageListener {
         try {
             Whitelist selectWhitelist;
             if (inputData.getClient() == null) {
+                logger.info("Client equals null");
                 selectWhitelist = whitelistDAO.findByClientNullAndRegex(whitelist.getRegex());
             } else {
                 selectWhitelist = whitelistDAO.findByClientAndRegex(whitelist.getClient(), whitelist.getRegex());
             }
             if (selectWhitelist == null) {
+                logger.info("Saving Whitelist: " + whitelist.toString());
                 whitelistDAO.save(whitelist);
-                System.out.println("Whitelist client: " + whitelist.getClient() + " and regex: " + whitelist.getRegex() + " was inserted successfully!");
+                logger.info("Saved Whitelist: " + whitelist.toString());
                 return true;
             } else {
-                System.out.println("The pair client and regex already exist");
+                logger.info("The pair client and regex already exist");
             }
-        } catch (NullPointerException dae) {
-            System.out.println(dae);
+        } catch (Exception dae) {
+            logger.error("An error occurred when trying to receive an insertion" + dae);
             dae.printStackTrace();
             return false;
         }

@@ -9,6 +9,7 @@
 I could not import from docker-compose.yml the variable NUMBER_OF_VALIDATION_CONSUMERS so in order to change the number of validation consumers:
 - Go to ChallengeApplication.java
 - In line 76 you can change the setConcurrentConsumers value to the number of consumers you wish
+- I don't know if it was a requirement but I did not use Busy Waiting
 
 #### RabbitMQ configuration:
 - The response.exchange is a direct exchange.

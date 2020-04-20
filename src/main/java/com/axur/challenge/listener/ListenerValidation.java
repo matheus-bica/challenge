@@ -7,6 +7,8 @@ import com.axur.challenge.DAO.WhitelistDAO;
 import com.axur.challenge.formatters.JsonFormatter;
 import com.axur.challenge.model.Whitelist;
 import com.axur.challenge.sender.SendResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;
 
@@ -19,6 +21,8 @@ import javax.annotation.Resource;
 @Service
 public class ListenerValidation implements MessageListener {
 
+    private static final Logger logger = LogManager.getLogger(ListenerValidation.class);
+
     @Resource
     private WhitelistDAO whitelistDAO;
 
@@ -27,18 +31,17 @@ public class ListenerValidation implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        System.out.println("Received Validation: " + new String(message.getBody()) + " From: "
+        logger.info("Received Validation: " + new String(message.getBody()) + " From: "
                 + message.getMessageProperties().getReceivedRoutingKey());
         try {
             JsonFormatter jsonFormatter = new Gson().fromJson(new String(message.getBody()), JsonFormatter.class);
             receivedValidation(jsonFormatter);
         } catch (JsonParseException e) {
-            System.out.println("It was not possible to read the input");
+            logger.info("It was not possible to read the input");
         }
     }
 
     public boolean receivedValidation(JsonFormatter inputData) {
-//		Getting all regex from this client
         List<Whitelist> listWhitelist = whitelistDAO.findByClientAndGlobal(inputData.getClient());
         boolean match = false;
         String regexMatched = "";
@@ -49,9 +52,12 @@ public class ListenerValidation implements MessageListener {
                 match = checkRegex(listWhitelist.get(index).getRegex(), inputData.getUrl());
                 if (match) {
                     regexMatched = listWhitelist.get(index).getRegex();
+                    logger.info("Found a match for " + inputData.getUrl() + " using regex " + regexMatched);
                 }
                 index++;
             }
+        } else {
+            logger.info("Did not found any Line in the database for this client or any global");
         }
         inputData.setRegex(regexMatched);
         inputData.setMatch(match);
