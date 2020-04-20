@@ -1,8 +1,17 @@
-version: '3'
 app:
   build: .
   environment:
-    - INSERTION_QUEUE: insertion.queue
+    INSERTION_QUEUE: insertion.queue
+    VALIDATION_QUEUE: validation.queue
+    NUMBER_OF_VALIDATION_CONSUMERS: 1
+    RESPONSE_EXCHANGE: response.exchange
+    RESPONSE_ROUTING_KEY: response.routing.key
+    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_PORT: 5672
+    RABBITMQ_VHOST: /
+    RABBITMQ_USERNAME: guest
+    RABBITMQ_PASSWORD: guest
+    JDBC_URL: jdbc:mysql://mysql:3306/axr_challenge?user=root&password=secret
   links:
     - mysql:mysql
     - rabbitmq:rabbitmq
