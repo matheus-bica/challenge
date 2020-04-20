@@ -30,7 +30,7 @@ public class ListenerInsertion implements MessageListener {
         }
     }
 
-    public void receivedInsertion(JsonFormatter inputData) {
+    public boolean receivedInsertion(JsonFormatter inputData) {
         Whitelist whitelist = new Whitelist(inputData.getClient(), inputData.getRegex());
         try {
             Whitelist selectWhitelist;
@@ -42,13 +42,16 @@ public class ListenerInsertion implements MessageListener {
             if (selectWhitelist == null) {
                 whitelistDAO.save(whitelist);
                 System.out.println("Whitelist client: " + whitelist.getClient() + " and regex: " + whitelist.getRegex() + " was inserted successfully!");
+                return true;
             } else {
                 System.out.println("The pair client and regex already exist");
             }
         } catch (NullPointerException dae) {
             System.out.println(dae);
             dae.printStackTrace();
+            return false;
         }
+        return false;
     }
 
 }

@@ -37,7 +37,7 @@ public class ListenerValidation implements MessageListener {
         }
     }
 
-    public void receivedValidation(JsonFormatter inputData) {
+    public boolean receivedValidation(JsonFormatter inputData) {
 //		Getting all regex from this client
         List<Whitelist> listWhitelist = whitelistDAO.findByClientAndGlobal(inputData.getClient());
         boolean match = false;
@@ -57,6 +57,8 @@ public class ListenerValidation implements MessageListener {
         inputData.setMatch(match);
 
         sendResponse.sendMessage(inputData);
+
+        return match;
     }
 
     public boolean checkRegex(String regex, String url) {

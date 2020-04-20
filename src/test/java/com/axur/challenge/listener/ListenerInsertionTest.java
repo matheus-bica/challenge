@@ -1,16 +1,18 @@
 package com.axur.challenge.listener;
 
+import com.axur.challenge.ChallengeApplication;
 import com.axur.challenge.DAO.WhitelistDAO;
 import com.axur.challenge.formatters.JsonFormatter;
 import com.axur.challenge.model.Whitelist;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
@@ -20,26 +22,15 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
-//With this property we load every test to the second database in order to not create or use the main database
-@TestPropertySource(properties = {"spring.datasource.url = jdbc:mysql://${MYSQL_HOST:localhost}:3306/axr_challenge_test?user=root&password=secret"})
+@SpringBootTest(classes = ChallengeApplication.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ListenerInsertionTest {
 
     @Resource
     ListenerInsertion listenerInsertion;
+
     @Resource
     WhitelistDAO whitelistDAO;
-
-    List<Whitelist> listWhitelist = new ArrayList<>();
-
-    @AfterEach
-    void tearDown() {
-        listWhitelist.forEach(whitelist -> {
-            if (whitelist != null) {
-                whitelistDAO.delete(whitelist);
-            }
-        });
-    }
 
     @Test
     void onMessageSimpleInsertion() {
@@ -59,7 +50,6 @@ class ListenerInsertionTest {
         //Testing the Insertion of one data in the database
         listenerInsertion.onMessage(messageClientNotNull);
         Whitelist actualWhitelist = whitelistDAO.findByClientAndRegex("bica", "[a-z]");
-        listWhitelist.add(actualWhitelist);
         assertNotNull(actualWhitelist);
     }
 
@@ -81,16 +71,14 @@ class ListenerInsertionTest {
         //Testing the Insertion of one data in the database
         listenerInsertion.onMessage(messageClientNotNull);
         Whitelist actualWhitelist = whitelistDAO.findByClientAndRegex("bicatest", "[a-z]");
-        listWhitelist.add(actualWhitelist);
         assertNotNull(actualWhitelist);
     }
 
     @Test
     void withNullClientReceivedInsertion() {
         JsonFormatter inputData = new JsonFormatter(null, "[A-Z]", "", "15", false);
-        listenerInsertion.receivedInsertion(inputData);
+        assertTrue(listenerInsertion.receivedInsertion(inputData));
         Whitelist actualWhitelist = whitelistDAO.findByClientNullAndRegex(inputData.getRegex());
-        listWhitelist.add(actualWhitelist);
         assertNotNull(actualWhitelist);
     }
 }
