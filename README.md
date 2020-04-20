@@ -10,4 +10,9 @@ I could not import from docker-compose.yml the variable NUMBER_OF_VALIDATION_CON
 - Go to ChallengeApplication.java
 - In line 76 you can change the setConcurrentConsumers value to the number of consumers you wish
 
-#### Queues configuration:
+#### RabbitMQ configuration:
+- The response.exchange is a direct exchange.
+- The routing.key for the validation message response is response.routing.key.
+- The queues validation.queue and insertion.queue have no bindings with the response.exchange since the response.exchange is only for the response for validation requests.
+
+All parameters from RabbitMQ configuration were set by SpringAMPQ or in the ConnectionFactory bean at ChallengeApplication.java.
